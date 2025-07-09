@@ -1,5 +1,7 @@
 import sys
 import os
+from google import genai
+from google.genai import types
 
 def write_file(working_directory, file_path, content):
     
@@ -12,8 +14,6 @@ def write_file(working_directory, file_path, content):
 
     if absWorkingDirectory not in absFilePath:
         return f'Error: Cannot write to "{file_path}" as it is outside the permitted working directory'
-#    if os.path.isfile(absFilePath) is False:
-#        return f'Error: File not found or is not a regular file: "{file_path}"'
     
     try:
         if os.path.exists(absFilePath) is True:
@@ -28,29 +28,20 @@ def write_file(working_directory, file_path, content):
     except Exception as e:
         return f'Error: {e}'
 
-'''
-Tips
-
-    os.path.exists: Check if a path exists
-    os.makedirs: Create a directory and all its parents
-    os.path.dirname: Return the directory name
-
-Example of writing to a file:
-
-with open(file_path, "w") as f:
-    f.write(content)
-
-'''
-
-
-'''
-    MAX_CHARS = 10000
-
-    try:
-        if len(open(absFilePath, "r").read(10001)) > MAX_CHARS:
-            return f'{open(absFilePath, "r").read(MAX_CHARS)}' + '\n' + f'[...File "{file_path}" truncated at 10000 characters]'
-        else:
-            return f'{open(absFilePath, "r").read()}'
-    except Exception as e:
-        return f'Error: {e}'
-'''
+schema_write_file = types.FunctionDeclaration(
+    name="write_file",
+    description="Either creates a file and filepath with the desired content, or overwrites an existing file with the desired content.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The file path of the file we wish to create or overwrite the contents of. Can be an absolute or relative path, but it must be within the working directory.",
+            ),
+            "content": types.Schema(
+                type=types.Type.STRING,
+                description="The string that will be used to make up the contents of the file we are writing to.",
+            ),
+        },
+    ),
+)

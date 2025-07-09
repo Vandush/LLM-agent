@@ -1,5 +1,8 @@
 import sys
 import os
+from google import genai
+from google.genai import types
+
 
 def get_file_content(working_directory, file_path):
     
@@ -25,3 +28,17 @@ def get_file_content(working_directory, file_path):
             return f'{open(absFilePath, "r").read()}'
     except Exception as e:
         return f'Error: {e}'
+
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Displays the conent of a file, up to 10000 characters.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The file path of the file we wish to view the contents of. Can be an absolute or relative path, but it must be within the working directory.",
+            ),
+        },
+    ),
+)
