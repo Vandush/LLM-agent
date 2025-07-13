@@ -1,8 +1,8 @@
 #from functions.get_files_info import get_files_info
-#from functions.get_file_content import get_file_content
+from functions.get_file_content import get_file_content
 #from functions.write_file import write_file
-from functions.run_python import run_python_file
-
+#from functions.run_python import run_python_file
+'''
 print("TEST ONE")
 print(run_python_file("calculator", "main.py"))
 
@@ -15,6 +15,7 @@ print(run_python_file("calculator", "../main.py"))
 print("TEST FOUR")
 print(run_python_file("calculator", "nonexistent.py"))
 '''
+'''
 print("TEST ONE")
 print(write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum"))
 
@@ -25,7 +26,6 @@ print("TEST THREE")
 print(write_file("calculator", "/tmp/temp.txt", "this should not be allowed"))
 '''
 
-'''
 print("TEST ONE")
 print(get_file_content("calculator", "main.py"))
 
@@ -35,7 +35,6 @@ print(get_file_content("calculator", "pkg/calculator.py"))
 print("TEST THREE")
 print(get_file_content("calculator", "/bin/cat"))
 #print(get_file_content("calculator", "lorem.txt"))
-'''
 
 '''
 print("TEST ONE")

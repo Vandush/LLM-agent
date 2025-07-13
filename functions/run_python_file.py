@@ -24,7 +24,8 @@ def run_python_file(working_directory, file_path):
         output = f'STDOUT: {fileRun.stdout}' + '\n' + f'STDERR: {fileRun.stderr}'
         if fileRun.returncode != 0:
             output = output + '\n' + f'Process exited with code {fileRun.returncode}'
-        if len(fileRun.stdout) == 0:
+        #if len(fileRun.stdout) == 0:
+        if len(output) == 0:
             return f'No output produced.'
         return f'{output}'
     except Exception as e:

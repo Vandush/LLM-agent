@@ -9,6 +9,7 @@ from functions.get_file_content import schema_get_file_content
 from functions.run_python_file import schema_run_python_file
 from functions.write_file import schema_write_file
 
+from functions.call_function import call_function
 
 try:
     args = sys.argv[1:]
@@ -64,6 +65,8 @@ def main():
     promptTokens = response.usage_metadata.prompt_token_count
     responseTokens = response.usage_metadata.candidates_token_count
 
+    for i in response.candidates:
+        messages.append(i.content)
 
     if "--verbose" in args:
         print(f"User prompt: {textInput}")
@@ -73,7 +76,39 @@ def main():
     if response.function_calls is None:
         print(response.text)
     else:
-        print(f"Calling function: {response.function_calls[0].name}({response.function_calls[0].args})")
+        if "--verbose" in args:
+            try:
+                function_call_result = call_function(response.function_calls[0], True)
+                print(f"-> {function_call_result.parts[0].function_response.response}")
+                messages.append(
+                    types.Content(
+                        role="tool",
+                        parts=[
+                            types.Part(
+                                text=function_call_result.parts[0].function_response.response['result']
+                            )
+                        ]
+                    ),
+                )
+                #print(f'     TROUBLESHOOTING: {messages}')
+            except Exception as e:
+                return f'Error: {e}'
+        else:
+            try:
+                function_call_result = call_function(response.function_calls[0])
+                messages.append(
+                    types.Content(
+                        role="tool",
+                        parts=[
+                            types.Part(
+                                text=function_call_result.parts[0].function_response.response['result']
+                            )
+                        ]
+                    ),
+                )
+                #print('AHHHHHHHH')
+            except Exception as e:
+                return f'Error: {e}'
 
 if __name__ == '__main__':
     main()

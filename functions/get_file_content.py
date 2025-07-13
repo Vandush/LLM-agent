@@ -1,4 +1,3 @@
-import sys
 import os
 from google import genai
 from google.genai import types
@@ -21,7 +20,6 @@ def get_file_content(working_directory, file_path):
     MAX_CHARS = 10000
 
     try:
-        #print(f'TROUBLESHOOTING: {os.path.dirname(absFilePath)}')
         if len(open(absFilePath, "r").read(10001)) > MAX_CHARS:
             return f'{open(absFilePath, "r").read(MAX_CHARS)}' + '\n' + f'[...File "{file_path}" truncated at 10000 characters]'
         else:

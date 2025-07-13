@@ -3,8 +3,11 @@ from google import genai
 from google.genai import types
 
 def get_files_info(working_directory, directory=None):
-    
+
     absWorkingDirectory = os.path.abspath(working_directory)
+
+    if directory == None:
+        directory = absWorkingDirectory
 
     if directory.startswith('/'):
         absDirectory = os.path.abspath(directory)
