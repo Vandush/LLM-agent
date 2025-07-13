@@ -52,63 +52,65 @@ def main():
             types.Content(role="user", parts=[types.Part(text=textInput)]),
             ]
 
-    response = client.models.generate_content(
-            model='gemini-2.0-flash-001', 
-            contents=messages,
-            config=types.GenerateContentConfig(
-                tools=[available_functions],
-                system_instruction=systemPrompt
+    for i in range(20):
+        try:
+            response = client.models.generate_content(
+                model='gemini-2.0-flash-001',
+                contents=messages,
+                config=types.GenerateContentConfig(
+                    tools=[available_functions],
+                    system_instruction=systemPrompt
                 ),
             )
-    
-    userPrompt = args[0]
-    promptTokens = response.usage_metadata.prompt_token_count
-    responseTokens = response.usage_metadata.candidates_token_count
 
-    for i in response.candidates:
-        messages.append(i.content)
+            userPrompt = args[0]
+            promptTokens = response.usage_metadata.prompt_token_count
+            responseTokens = response.usage_metadata.candidates_token_count
 
-    if "--verbose" in args:
-        print(f"User prompt: {textInput}")
-        print(f"Prompt tokens: {promptTokens}")
-        print(f"Response tokens: {responseTokens}")
-    
-    if response.function_calls is None:
-        print(response.text)
-    else:
-        if "--verbose" in args:
-            try:
-                function_call_result = call_function(response.function_calls[0], True)
-                print(f"-> {function_call_result.parts[0].function_response.response}")
-                messages.append(
-                    types.Content(
-                        role="tool",
-                        parts=[
-                            types.Part(
-                                text=function_call_result.parts[0].function_response.response['result']
-                            )
-                        ]
-                    ),
-                )
-                #print(f'     TROUBLESHOOTING: {messages}')
-            except Exception as e:
-                return f'Error: {e}'
-        else:
-            try:
-                function_call_result = call_function(response.function_calls[0])
-                messages.append(
-                    types.Content(
-                        role="tool",
-                        parts=[
-                            types.Part(
-                                text=function_call_result.parts[0].function_response.response['result']
-                            )
-                        ]
-                    ),
-                )
-                #print('AHHHHHHHH')
-            except Exception as e:
-                return f'Error: {e}'
+            for i in response.candidates:
+                messages.append(i.content)
 
+            if "--verbose" in args:
+                print(f"User prompt: {textInput}")
+                print(f"Prompt tokens: {promptTokens}")
+                print(f"Response tokens: {responseTokens}")
+
+            if response.function_calls is None:
+                print(response.text)
+                break
+            else:
+                if "--verbose" in args:
+                    try:
+                        function_call_result = call_function(response.function_calls[0], True)
+                        print(f"-> {function_call_result.parts[0].function_response.response}")
+                        messages.append(
+                            types.Content(
+                                role="user",
+                                parts=[
+                                    types.Part(
+                                        text=function_call_result.parts[0].function_response.response['result']
+                                    )
+                                ]
+                            ),
+                        )
+                    except Exception as e:
+                       return f'Error: {e}'
+                else:
+                    try:
+                        function_call_result = call_function(response.function_calls[0])
+                        messages.append(
+                            types.Content(
+                                role="user",
+                                parts=[
+                                    types.Part(
+                                        text=function_call_result.parts[0].function_response.response['result']
+                                    )
+                                ]
+                            ),
+                        )
+                    except Exception as e:
+                        return f'Error: {e}'
+        except Exception as e:
+            return f'Error: {e}'
 if __name__ == '__main__':
     main()
