@@ -2,6 +2,8 @@ import os
 from google import genai
 from google.genai import types
 
+from config import MAX_CHARS
+
 
 def get_file_content(working_directory, file_path):
     
@@ -17,7 +19,7 @@ def get_file_content(working_directory, file_path):
     if os.path.isfile(absFilePath) is False:
         return f'Error: File not found or is not a regular file: "{file_path}"'
 
-    MAX_CHARS = 10000
+    #MAX_CHARS = 10000
 
     try:
         if len(open(absFilePath, "r").read(10001)) > MAX_CHARS:
@@ -29,7 +31,7 @@ def get_file_content(working_directory, file_path):
 
 schema_get_file_content = types.FunctionDeclaration(
     name="get_file_content",
-    description="Displays the conent of a file, up to 10000 characters.",
+    description="Returns a string of the conents of a file, up to 10000 characters, to the AI. You will have to add the contents of this function to your response when you're requested for the contents.",
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
