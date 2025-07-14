@@ -3,7 +3,7 @@ import os
 from google import genai
 from google.genai import types
 
-def run_python_file(working_directory, file_path):
+def run_python_file(working_directory, file_path, args=""):
     
     absWorkingDirectory = os.path.abspath(working_directory)
 
@@ -20,11 +20,10 @@ def run_python_file(working_directory, file_path):
         return f'Error: "{file_path}" is not a Python file.'
 
     try:
-        fileRun = subprocess.run(['python3', absFilePath], cwd=os.path.dirname(absFilePath), capture_output=True, timeout=30)
+        fileRun = subprocess.run(['python3', absFilePath, args], cwd=os.path.dirname(absFilePath), capture_output=True, timeout=30)
         output = f'STDOUT: {fileRun.stdout}' + '\n' + f'STDERR: {fileRun.stderr}'
         if fileRun.returncode != 0:
             output = output + '\n' + f'Process exited with code {fileRun.returncode}'
-        #if len(fileRun.stdout) == 0:
         if len(output) == 0:
             return f'No output produced.'
         return f'{output}'
@@ -33,7 +32,7 @@ def run_python_file(working_directory, file_path):
 
 schema_run_python_file = types.FunctionDeclaration(
     name="run_python_file",
-    description='Will attempt to run the python file as a subprocess using the "python3" command. STDOUT and STDERR are captured, and the process will timeout after 30 seconds.',
+    description='Will attempt to run the python file as a subprocess using the "python3" command. STDOUT and STDERR are captured, and the process will timeout after 30 seconds. Additional arguments are available but are optional.',
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
@@ -41,6 +40,11 @@ schema_run_python_file = types.FunctionDeclaration(
                 type=types.Type.STRING,
                 description="The file path of the file we wish to run. Can be an absolute or relative path, but it must be within the working directory.",
             ),
+            "args": types.Schema(
+                type=types.Type.STRING,
+                description="The arguments we wish to pass to the file we are running.",
+            ),
+
         },
     ),
 )
